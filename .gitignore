@@ -1,96 +1,23 @@
 # Python
 __pycache__/
-*.py[cod]
-*$py.class
-*.so
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
 
 # Virtual Environment
 venv/
-env/
-ENV/
-env.bak/
-venv.bak/
-
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-*~
-.DS_Store
-
-# Jupyter Notebook
-.ipynb_checkpoints
-*.ipynb
-
-# PyTorch Models
-*.pth
-*.pt
-*.onnx
-training/checkpoints/
-!training/checkpoints/.gitkeep
-
-# Training Results
-training/results/
-training/logs/
-training/runs/
-tensorboard/
 
 # Dataset - Large files
 PCB_DATASET/images/
 PCB_DATASET/Annotations/
 PCB_DATASET/rotation/
 PCB_DATASET/PCB_USED/
-data/rois/
+
 
 # Processed Data
 data/splits/train/
 data/splits/val/
 data/splits/test/
-
-# Inference outputs
-inference/outputs/
-inference/results/
-*.jpg
-*.jpeg
-*.png
-*.bmp
-
-# Testing
-.pytest_cache/
-.coverage
-htmlcov/
-.tox/
-.nox/
-
-# Environment variables
-.env
-.env.local
-
-# Logs
-*.log
-logs/
-
-# Temporary files
-*.tmp
-*.temp
-*.cache
+data/rois/Missing_hole
+data/rois/Mouse_bite
+data/rois/Open_circuit
+data/rois/Short
+data/rois/Spur
+data/rois/Spurious_copper

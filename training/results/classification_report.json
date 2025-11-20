@@ -1,0 +1,51 @@
+{
+    "Missing_hole": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 75.0
+    },
+    "Mouse_bite": {
+        "precision": 0.9866666666666667,
+        "recall": 1.0,
+        "f1-score": 0.9932885906040269,
+        "support": 74.0
+    },
+    "Open_circuit": {
+        "precision": 1.0,
+        "recall": 0.9863013698630136,
+        "f1-score": 0.993103448275862,
+        "support": 73.0
+    },
+    "Short": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 74.0
+    },
+    "Spur": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 74.0
+    },
+    "Spurious_copper": {
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1-score": 1.0,
+        "support": 76.0
+    },
+    "accuracy": 0.9977578475336323,
+    "macro avg": {
+        "precision": 0.9977777777777778,
+        "recall": 0.997716894977169,
+        "f1-score": 0.9977320064799815,
+        "support": 446.0
+    },
+    "weighted avg": {
+        "precision": 0.9977877428998505,
+        "recall": 0.9977578475336323,
+        "f1-score": 0.9977576399749684,
+        "support": 446.0
+    }
+}
