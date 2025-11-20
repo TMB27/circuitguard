@@ -10,29 +10,24 @@ def align_images(test_img, template_img):
     test_gray = cv2.cvtColor(test_img, cv2.COLOR_BGR2GRAY)
     template_gray = cv2.cvtColor(template_img, cv2.COLOR_BGR2GRAY)
     
-    # Find features
+    # Find features using ORB
     orb = cv2.ORB_create(5000)
     kp1, des1 = orb.detectAndCompute(test_gray, None)
     kp2, des2 = orb.detectAndCompute(template_gray, None)
     
     # Match features
-    bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
-    matches = bf.match(des1, des2)
+    matcher = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=True)
+    matches = matcher.match(des1, des2)
     matches = sorted(matches, key=lambda x: x.distance)
     
-    if len(matches) < 4:
-        return test_img
-    
-    # Get matching points
+    # Get best 100 matching points
     src_pts = np.float32([kp1[m.queryIdx].pt for m in matches[:100]]).reshape(-1, 1, 2)
     dst_pts = np.float32([kp2[m.trainIdx].pt for m in matches[:100]]).reshape(-1, 1, 2)
     
-    # Align images
+    # Calculate transformation matrix
     H, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
     
-    if H is None:
-        return test_img
-    
+    # Apply transformation
     height, width = template_img.shape[:2]
     aligned_img = cv2.warpPerspective(test_img, H, (width, height))
     
@@ -132,39 +127,29 @@ def crop_defect(image, defect, target_size=128, padding=5):
 
 def detect_defects(test_path, template_path, min_area=100):
     """
-    Complete defect detection pipeline
+    Main function to detect defects in PCB
     
     Steps:
     1. Load images
     2. Subtract template from test
-    3. Threshold to binary
-    4. Filter noise
-    5. Find defect regions
-    
-    Returns original image, aligned test image, and list of defects
+    3. Convert to black and white
+    4. Remove noise
+    5. Find defect areas
     """
     # Load images
     test_img = cv2.imread(test_path)
     template_img = cv2.imread(template_path)
     
-    if test_img is None:
-        print(f"Error: Could not load {test_path}")
-        return None, None, []
-    
-    if template_img is None:
-        print(f"Error: Could not load {template_path}")
-        return None, None, []
-    
-    # Step 1: Subtract images
+    # Subtract template from test
     diff, test_aligned = subtract_images(test_img, template_img)
     
-    # Step 2: Threshold
+    # Convert to binary (black and white)
     binary = threshold_image(diff)
     
-    # Step 3: Filter noise
+    # Remove small noise
     filtered = filter_noise(binary)
     
-    # Step 4: Find defects
+    # Find defect regions
     defects = find_defects(filtered, min_area=min_area)
     
     print(f"Found {len(defects)} defects")
@@ -193,24 +178,17 @@ def draw_defects(image, defects):
     return result
 
 
-# Test the detection
+# Simple test
 if __name__ == "__main__":
-    # Example usage
     test_path = "../PCB_DATASET/images/Missing_hole/01_missing_hole_01.jpg"
     template_path = "../PCB_DATASET/PCB_USED/01.JPG"
     
-    if os.path.exists(test_path) and os.path.exists(template_path):
-        # Run detection
-        aligned, filtered, defects = detect_defects(test_path, template_path, min_area=120)
-        
-        if aligned is not None:
-            # Draw boxes
-            result = draw_defects(aligned, defects)
-            
-            # Save result
-            os.makedirs("results", exist_ok=True)
-            cv2.imwrite("results/detected_defects.jpg", result)
-            cv2.imwrite("results/binary_mask.jpg", filtered)
-            print("Saved results to results/ folder")
-    else:
-        print("Example images not found. Please provide valid paths.")
+    # Run detection
+    aligned, filtered, defects = detect_defects(test_path, template_path, min_area=120)
+    
+    # Draw boxes around defects
+    result = draw_defects(aligned, defects)
+    
+    # Save result
+    cv2.imwrite("detected_defects.jpg", result)
+    print("Saved result!")

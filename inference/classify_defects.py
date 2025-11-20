@@ -25,83 +25,79 @@ class DefectClassifier(nn.Module):
 
 
 def load_model(model_path, num_classes=6):
-    """Load trained model from checkpoint"""
+    """Load the trained AI model"""
+    # Use GPU if available, otherwise CPU
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     
     # Create model
     model = DefectClassifier(num_classes=num_classes)
     
-    # Load weights
+    # Load trained weights
     model.load_state_dict(torch.load(model_path, map_location=device))
     model = model.to(device)
     model.eval()
     
-    print(f"Model loaded on {device}")
     return model, device
 
 
 def prepare_image(image, image_size=128):
-    """Prepare image for model prediction"""
-    # Resize
+    """Make image ready for AI model"""
+    # Resize to 128x128
     image = cv2.resize(image, (image_size, image_size))
     
-    # Normalize to 0-1
+    # Convert to 0-1 range
     image = image / 255.0
     
-    # Convert to tensor
+    # Convert to PyTorch format
     image = torch.FloatTensor(image).permute(2, 0, 1)
-    
-    # Add batch dimension
     image = image.unsqueeze(0)
     
     return image
 
 
 def predict_defect(model, image, device, class_mapping):
-    """Predict defect type"""
-    # Prepare image
+    """Use AI to predict what type of defect"""
+    # Prepare image for model
     image_tensor = prepare_image(image).to(device)
     
-    # Predict
+    # Run prediction
     with torch.no_grad():
         output = model(image_tensor)
         probabilities = torch.softmax(output, dim=1)
         confidence, predicted_class = probabilities.max(1)
     
-    # Get class name
+    # Get predicted class ID
     predicted_id = predicted_class.item()
     
-    # Reverse mapping (id -> name)
+    # Convert ID to class name
     id_to_class = {v: k for k, v in class_mapping.items()}
-    class_name = id_to_class.get(predicted_id, "unknown")
+    class_name = id_to_class[predicted_id]
     
     return class_name, confidence.item()
 
 
 def classify_defects(aligned_image, defects, model_path, class_mapping_path):
     """
-    Classify all detected defects
-    
-    Returns list of defects with predicted class and confidence
+    Classify each defect using AI model
     """
-    # Load class mapping
+    # Load class mapping file
     with open(class_mapping_path, 'r') as f:
         class_mapping = json.load(f)
     
-    # Load model
+    # Load trained model
     model, device = load_model(model_path, num_classes=len(class_mapping))
     
-    # Classify each defect
+    # Check each defect
     results = []
     
     for i, defect in enumerate(defects):
-        # Crop defect region
+        # Get defect position
         x = defect['x']
         y = defect['y']
         w = defect['width']
         h = defect['height']
         
-        # Add padding
+        # Add some padding around defect
         padding = 5
         img_height, img_width = aligned_image.shape[:2]
         x1 = max(0, x - padding)
@@ -109,12 +105,13 @@ def classify_defects(aligned_image, defects, model_path, class_mapping_path):
         x2 = min(img_width, x + w + padding)
         y2 = min(img_height, y + h + padding)
         
+        # Crop defect from image
         crop = aligned_image[y1:y2, x1:x2]
         
-        # Predict
+        # Ask AI model what type of defect
         class_name, confidence = predict_defect(model, crop, device, class_mapping)
         
-        # Add to results
+        # Save result
         results.append({
             'defect_id': i + 1,
             'class': class_name,
@@ -123,7 +120,7 @@ def classify_defects(aligned_image, defects, model_path, class_mapping_path):
             'crop': crop
         })
         
-        print(f"Defect {i+1}: {class_name} ({confidence:.2%})")
+        print(f"Defect {i+1}: {class_name} ({confidence:.0%})")
     
     return results
 
@@ -173,46 +170,28 @@ def draw_classified_defects(image, classified_defects, min_confidence=0.5):
     return result
 
 
-# Test the classifier
+# Simple test
 if __name__ == "__main__":
     from detect_defects import detect_defects
     
-    # Paths
+    # File paths
     test_path = "../PCB_DATASET/images/Missing_hole/01_missing_hole_01.jpg"
     template_path = "../PCB_DATASET/PCB_USED/01.JPG"
-    model_path = "../Training Pipeline/checkpoints/best_model.pth"
+    model_path = "../training/checkpoints/best_model.pth"
     class_mapping_path = "../data/splits/class_mapping.json"
     
-    # Check if files exist
-    if not all([os.path.exists(p) for p in [test_path, template_path, model_path, class_mapping_path]]):
-        print("Error: Some files are missing. Please check paths.")
-        print(f"Test image: {os.path.exists(test_path)}")
-        print(f"Template: {os.path.exists(template_path)}")
-        print(f"Model: {os.path.exists(model_path)}")
-        print(f"Class mapping: {os.path.exists(class_mapping_path)}")
-    else:
-        # Step 1: Detect defects
-        print("Step 1: Detecting defects...")
-        aligned, filtered, defects = detect_defects(test_path, template_path, min_area=120)
-        
-        if aligned is not None and len(defects) > 0:
-            # Step 2: Classify defects
-            print("\nStep 2: Classifying defects...")
-            classified = classify_defects(aligned, defects, model_path, class_mapping_path)
-            
-            # Step 3: Draw results
-            print("\nStep 3: Drawing results...")
-            result = draw_classified_defects(aligned, classified, min_confidence=0.5)
-            
-            # Save
-            os.makedirs("results", exist_ok=True)
-            cv2.imwrite("results/classified_defects.jpg", result)
-            print("\nSaved results to results/classified_defects.jpg")
-            
-            # Print summary
-            print("\nSummary:")
-            for det in classified:
-                if det['confidence'] >= 0.5:
-                    print(f"  - {det['class']}: {det['confidence']:.0%}")
-        else:
-            print("No defects found or image loading failed.")
+    # Step 1: Find defects
+    print("Finding defects...")
+    aligned, filtered, defects = detect_defects(test_path, template_path, min_area=120)
+    
+    # Step 2: Classify defects
+    print("Classifying defects...")
+    classified = classify_defects(aligned, defects, model_path, class_mapping_path)
+    
+    # Step 3: Draw results
+    print("Drawing results...")
+    result = draw_classified_defects(aligned, classified, min_confidence=0.5)
+    
+    # Save
+    cv2.imwrite("classified_defects.jpg", result)
+    print("Done! Saved result.")

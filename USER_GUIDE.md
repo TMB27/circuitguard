@@ -82,7 +82,7 @@ After running `streamlit run app.py`, you'll see the PCB Defect Detector interfa
 
 **Template PCB (Left Side):**
 - Upload a defect-free reference board
-- This is your "golden sample"
+- This is your *Template Sample*
 - Must be same PCB design as test board
 - Format: JPG, JPEG, or PNG
 
@@ -99,7 +99,7 @@ After running `streamlit run app.py`, you'll see the PCB Defect Detector interfa
 
 #### 4. Run Detection
 
-Click the blue **"🔍 Detect Defects"** button.
+Click the blue **"Detect Defects"** button.
 
 Progress indicators show:
 1. Saving images... (20%)
