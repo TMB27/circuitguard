@@ -15,6 +15,7 @@ A complete AI-powered system for detecting and classifying defects in printed ci
 - [Web Interface](#web-interface)
 - [Export Options](#export-options)
 - [Troubleshooting](#troubleshooting)
+- [Version Control](#version-control)
 - [Contributing](#contributing)
 
 ## 🎯 Overview
@@ -86,44 +87,43 @@ Circuit_Guard_New/
 ├── PCB_DATASET/                   # Original dataset
 │   ├── images/                    # Test PCB images
 │   ├── Annotations/               # XML annotations
-│   └── PCB_USED/                  # Template images
+│   ├── PCB_USED/                  # Template images
+│   └── rotate.py                  # Rotation utilities
 │
-├── data prepration/               # Data preprocessing scripts
+├── preprocessing/                 # Data preprocessing scripts
 │   ├── xml_parser.py              # Parse XML annotations
 │   ├── extract_rois.py            # Extract defect regions
 │   ├── split_dataset.py           # Train/val/test split
-│   └── main.py                    # Run complete pipeline
+│   └── data.py                    # Data pipeline
 │
-├── Training Pipeline/             # Model training
+├── training/                      # Model training
 │   ├── dataset.py                 # PyTorch dataset
 │   ├── efficientnet_model.py      # Model definition
 │   ├── train.py                   # Training script
 │   ├── evaluate.py                # Evaluation metrics
 │   ├── checkpoints/               # Saved models
+│   │   └── best_model.pth
 │   └── results/                   # Confusion matrix, reports
+│       └── classification_report.json
 │
-├── interface/                     # Web application
-│   ├── app.py                     # Streamlit interface
+├── inference/                     # Inference and web app
+│   ├── app.py                     # Streamlit web interface
 │   ├── detect_defects.py          # Detection pipeline
 │   └── classify_defects.py        # Classification logic
 │
-├── simple_app/                    # Simplified version
-│   ├── detect_defects.py          # All-in-one detection
-│   ├── classify_defects.py        # Simple classification
-│   ├── app.py                     # Streamlit app
-│   └── main.py                    # CLI menu
-│
+├── .gitignore                     # Git ignore rules
 ├── requirements.txt               # Python dependencies
 ├── README.md                      # This file
-└── USER_GUIDE.md                  # Detailed usage guide
+├── USER_GUIDE.md                  # Detailed usage guide
+└── TECHNICAL_DOCUMENTATION.md     # Technical details
 ```
 
 ## 🚀 Quick Start
 
-### Option 1: Web Interface (Recommended)
+### Web Interface (Recommended)
 
 ```bash
-cd interface
+cd inference
 streamlit run app.py
 ```
 
@@ -133,23 +133,11 @@ streamlit run app.py
 4. Click "Detect Defects"
 5. View results and export reports
 
-### Option 2: Command Line
-
-```bash
-cd simple_app
-python main.py
-```
-
-Follow the interactive menu to:
-- Detect defects only
-- Detect and classify defects
-- Launch web interface
-
-### Option 3: Python Script
+### Python Script
 
 ```python
-from interface.detect_defects import detect_defects
-from interface.classify_defects import classify_defects
+from inference.detect_defects import detect_defects
+from inference.classify_defects import classify_defects
 
 # Detect defects
 aligned, filtered, defects = detect_defects(
@@ -162,7 +150,7 @@ aligned, filtered, defects = detect_defects(
 results = classify_defects(
     aligned,
     defects,
-    "Training Pipeline/checkpoints/best_model.pth",
+    "training/checkpoints/best_model.pth",
     "data/splits/class_mapping.json"
 )
 
@@ -178,8 +166,8 @@ for det in results:
 If you have your own PCB images:
 
 ```bash
-cd "data prepration"
-python main.py
+cd preprocessing
+python data.py
 ```
 
 This will:
@@ -193,7 +181,7 @@ This will:
 If you want to train on your own data:
 
 ```bash
-cd "Training Pipeline"
+cd training
 python train.py
 ```
 
@@ -208,7 +196,7 @@ Monitor progress in console. Best model saves automatically.
 ### 3. Evaluate Model
 
 ```bash
-cd "Training Pipeline"
+cd training
 python evaluate.py
 ```
 
@@ -221,13 +209,13 @@ Generates:
 
 **Web Interface:**
 ```bash
-cd interface
+cd inference
 streamlit run app.py
 ```
 
 **Command Line:**
 ```bash
-cd interface
+cd inference
 python detect_defects.py --test <test_image> --template <template_image>
 ```
 
@@ -338,10 +326,10 @@ pip install opencv-python
 **Model not found:**
 ```bash
 # Check path
-ls "Training Pipeline/checkpoints/best_model.pth"
+ls training/checkpoints/best_model.pth
 
 # Train model if missing
-cd "Training Pipeline"
+cd training
 python train.py
 ```
 
@@ -356,6 +344,91 @@ python train.py
 - Reduce batch size in training
 - Use smaller images
 - Close other programs
+
+---
+
+## 🔄 Version Control
+
+### Git Configuration
+
+The project includes a comprehensive `.gitignore` file that prevents committing:
+
+**Large Files:**
+- ✅ Dataset images (`PCB_DATASET/images/`, `PCB_DATASET/Annotations/`)
+- ✅ Processed ROIs (`data/rois/`)
+- ✅ Split datasets (`data/splits/train/`, `val/`, `test/`)
+- ✅ Trained models (`training/checkpoints/*.pth`)
+
+**Generated Files:**
+- ✅ Training results and logs
+- ✅ Inference outputs
+- ✅ Python cache (`__pycache__/`)
+- ✅ Virtual environments (`venv/`, `env/`)
+
+**Development Files:**
+- ✅ IDE settings (`.vscode/`, `.idea/`)
+- ✅ Jupyter checkpoints
+- ✅ Temporary files
+
+**What Gets Committed:**
+- ✅ Source code (`.py` files)
+- ✅ Documentation (`.md` files)
+- ✅ Configuration (`requirements.txt`, `class_mapping.json`)
+- ✅ Project structure
+
+### Initial Setup
+
+```bash
+# Initialize repository (if not already done)
+git init
+
+# Add files
+git add .
+
+# Commit
+git commit -m "Initial commit: PCB defect detection system"
+
+# Add remote (replace with your URL)
+git remote add origin https://github.com/yourusername/circuitguard.git
+
+# Push
+git push -u origin main
+```
+
+### Best Practices
+
+**DO commit:**
+- Source code changes
+- Documentation updates
+- Configuration updates
+- Bug fixes
+
+**DON'T commit:**
+- Large dataset files (use `.gitignore`)
+- Trained models (too large, use releases or separate storage)
+- Personal IDE settings
+- Temporary/cache files
+
+### Recommended Workflow
+
+```bash
+# Create feature branch
+git checkout -b feature/new-defect-type
+
+# Make changes
+# ... edit files ...
+
+# Stage and commit
+git add filename.py
+git commit -m "Add: Support for new defect type"
+
+# Push branch
+git push origin feature/new-defect-type
+
+# Create pull request on GitHub
+```
+
+---
 
 ## 🎓 Training Your Own Model
 
@@ -389,14 +462,14 @@ Your dataset should have:
 ### 2. Extract ROIs
 
 ```bash
-cd "data prepration"
-python main.py
+cd preprocessing
+python data.py
 ```
 
 ### 3. Train
 
 ```bash
-cd "Training Pipeline"
+cd training
 python train.py
 ```
 

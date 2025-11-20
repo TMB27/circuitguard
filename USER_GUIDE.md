@@ -38,21 +38,13 @@
 
 ### Launch the Application
 
-**Option 1: Web Interface (Easiest)**
+**Web Interface**
 ```bash
-cd interface
+cd inference
 streamlit run app.py
 ```
 
 Your browser will open automatically at http://localhost:8501
-
-**Option 2: Command Line**
-```bash
-cd simple_app
-python main.py
-```
-
-Choose from menu options.
 
 ---
 
@@ -67,7 +59,7 @@ After running `streamlit run app.py`, you'll see the PCB Defect Detector interfa
 #### 2. Configure Settings (Sidebar)
 
 **Model Path:**
-- Default: `../Training Pipeline/checkpoints/best_model.pth`
+- Default: `../training/checkpoints/best_model.pth`
 - Only change if you have a custom trained model
 
 **Class Mapping:**
@@ -298,7 +290,7 @@ ID, Type, Confidence, X, Y, Width, Height, Area
 For automation or batch processing:
 
 ```bash
-cd interface
+cd inference
 python detect_defects.py
 ```
 
@@ -321,8 +313,10 @@ Process multiple boards:
 
 ```python
 import os
+import sys
+sys.path.append('inference')
 from detect_defects import detect_defects
-from classify_defects import classify_defects, draw_classified_defects
+from classify_defects import classify_defects
 import cv2
 
 template = "template.jpg"
@@ -618,6 +612,71 @@ A: Use Python API to generate reports programmatically.
 
 ---
 
+## Version Control & Git
+
+### Using Git with This Project
+
+The project is configured with `.gitignore` to prevent committing large files:
+
+**Ignored (not committed):**
+- Dataset images and annotations
+- Trained model checkpoints
+- Generated results
+- Python cache files
+- Virtual environments
+
+**Tracked (committed):**
+- Source code
+- Documentation
+- Configuration files
+- Project structure
+
+### Typical Workflow
+
+```bash
+# Check what changed
+git status
+
+# Stage specific files
+git add filename.py
+
+# Commit with message
+git commit -m "Fix: Improved detection accuracy"
+
+# Push to GitHub
+git push origin main
+```
+
+### Working with Models
+
+Since model files (`.pth`) are large and ignored by git:
+
+**Option 1: GitHub Releases**
+```bash
+# After training a good model
+# Create a release on GitHub and attach the .pth file
+```
+
+**Option 2: External Storage**
+- Use Google Drive, Dropbox, or AWS S3
+- Share download link in README
+- Download manually to `training/checkpoints/`
+
+**Option 3: Git LFS (for teams)**
+```bash
+# Install Git LFS
+git lfs install
+
+# Track .pth files
+git lfs track "*.pth"
+
+# Commit normally
+git add training/checkpoints/best_model.pth
+git commit -m "Add trained model"
+```
+
+---
+
 ## Appendix
 
 ### Keyboard Shortcuts (Streamlit)
@@ -628,8 +687,10 @@ A: Use Python API to generate reports programmatically.
 
 ### File Locations
 
-- Models: `Training Pipeline/checkpoints/`
-- Results: `Training Pipeline/results/`
+- Models: `training/checkpoints/`
+- Results: `training/results/`
+- Preprocessed data: `data/splits/`
+- Original dataset: `PCB_DATASET/`
 - Logs: Streamlit logs in terminal
 - Temp files: System temp folder (auto-cleaned)
 
