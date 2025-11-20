@@ -35,21 +35,3 @@ def create_model(num_classes=6):
     print(f"Device: {device}")
     
     return model
-
-
-# Test model
-if __name__ == "__main__":
-    print("Creating model...")
-    model = create_model(num_classes=6)
-    
-    # Test forward pass
-    batch_size = 4
-    dummy_input = torch.randn(batch_size, 3, 128, 128)
-    
-    if torch.cuda.is_available():
-        dummy_input = dummy_input.cuda()
-    
-    output = model(dummy_input)
-    print(f"\nInput shape: {dummy_input.shape}")
-    print(f"Output shape: {output.shape}")
-    print("Model works!")

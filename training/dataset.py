@@ -1,4 +1,3 @@
-# Simple PyTorch Dataset for PCB defect images
 import torch
 from torch.utils.data import Dataset, DataLoader
 import cv2
@@ -76,17 +75,3 @@ def create_dataloaders(data_folder, batch_size=32, image_size=128):
     print(f"Test: {len(test_dataset)} images")
     
     return train_loader, val_loader, test_loader
-
-
-# Test the dataset
-if __name__ == "__main__":
-    data_folder = "../data/splits"
-    
-    print("Creating dataloaders...")
-    train_loader, val_loader, test_loader = create_dataloaders(data_folder, batch_size=4)
-    
-    print("\nTesting batch loading...")
-    images, labels = next(iter(train_loader))
-    print(f"Batch shape: {images.shape}")
-    print(f"Labels: {labels}")
-    print("Dataset works!")
