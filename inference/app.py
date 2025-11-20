@@ -223,7 +223,7 @@ def main():
         
         # Model paths
         model_path = st.text_input("Model Path", 
-                                   "../Training Pipeline/checkpoints/best_model.pth")
+                                   "../training/checkpoints/best_model.pth")
         class_mapping_path = st.text_input("Class Mapping", 
                                           "../data/splits/class_mapping.json")
         
