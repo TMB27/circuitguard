@@ -316,18 +316,12 @@ for epoch in range(num_epochs):
 
 **Hyperparameters:**
 ```python
-EPOCHS = 50
+EPOCHS = 10
 BATCH_SIZE = 32
 LEARNING_RATE = 0.0001
 OPTIMIZER = Adam
 LOSS = CrossEntropyLoss
 ```
-
-**Training Time:**
-- CPU: ~2-4 hours (50 epochs)
-- GPU (GTX 1060): ~30-60 minutes
-
----
 
 #### 2.4 Evaluation (`evaluate.py`)
 

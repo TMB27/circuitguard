@@ -59,12 +59,28 @@ git clone https://github.com/yourusername/pcb-defect-detection.git
 cd pcb-defect-detection
 ```
 
-### 2. Install Dependencies
+### 2. Download Dataset
+Download and extract the PCB dataset:
+
+**Dataset Link:** [Download PCB_DATASET.zip from Dropbox](https://www.dropbox.com/scl/fi/4vrtqn7t001yl41oucflu/PCB_DATASET.zip?rlkey=pghz15q2bsg2&e=1&st=odxdm9ml)
+
+```bash
+# Extract to project root
+unzip PCB_DATASET.zip -d .
+```
+
+The dataset includes:
+- `PCB_DATASET/images/` - Test PCB images with defects
+- `PCB_DATASET/Annotations/` - XML annotation files (Pascal VOC format)
+- `PCB_DATASET/PCB_USED/` - Template (defect-free) PCB images
+- 6 defect classes: Missing_hole, Mouse_bite, Open_circuit, Short, Spur, Spurious_copper
+
+### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 3. Verify Installation
+### 4. Verify Installation
 ```bash
 python -c "import torch; import cv2; import streamlit; print('All dependencies installed!')"
 ```
@@ -293,22 +309,6 @@ Professional report with:
 - Timestamp and metadata
 - Ready to share with stakeholders
 
-## 🔧 Troubleshooting
-
-### Installation Issues
-
-**Problem:** `torch` won't install
-```bash
-# Try CPU-only version
-pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-```
-
-**Problem:** `cv2` import error
-```bash
-pip uninstall opencv-python opencv-python-headless
-pip install opencv-python
-```
-
 ### Detection Issues
 
 **No defects found:**
@@ -333,102 +333,6 @@ cd training
 python train.py
 ```
 
-### Performance Issues
-
-**Slow detection:**
-- Close other applications
-- Use GPU if available
-- Model is cached after first load
-
-**Out of memory:**
-- Reduce batch size in training
-- Use smaller images
-- Close other programs
-
----
-
-## 🔄 Version Control
-
-### Git Configuration
-
-The project includes a comprehensive `.gitignore` file that prevents committing:
-
-**Large Files:**
-- ✅ Dataset images (`PCB_DATASET/images/`, `PCB_DATASET/Annotations/`)
-- ✅ Processed ROIs (`data/rois/`)
-- ✅ Split datasets (`data/splits/train/`, `val/`, `test/`)
-- ✅ Trained models (`training/checkpoints/*.pth`)
-
-**Generated Files:**
-- ✅ Training results and logs
-- ✅ Inference outputs
-- ✅ Python cache (`__pycache__/`)
-- ✅ Virtual environments (`venv/`, `env/`)
-
-**Development Files:**
-- ✅ IDE settings (`.vscode/`, `.idea/`)
-- ✅ Jupyter checkpoints
-- ✅ Temporary files
-
-**What Gets Committed:**
-- ✅ Source code (`.py` files)
-- ✅ Documentation (`.md` files)
-- ✅ Configuration (`requirements.txt`, `class_mapping.json`)
-- ✅ Project structure
-
-### Initial Setup
-
-```bash
-# Initialize repository (if not already done)
-git init
-
-# Add files
-git add .
-
-# Commit
-git commit -m "Initial commit: PCB defect detection system"
-
-# Add remote (replace with your URL)
-git remote add origin https://github.com/yourusername/circuitguard.git
-
-# Push
-git push -u origin main
-```
-
-### Best Practices
-
-**DO commit:**
-- Source code changes
-- Documentation updates
-- Configuration updates
-- Bug fixes
-
-**DON'T commit:**
-- Large dataset files (use `.gitignore`)
-- Trained models (too large, use releases or separate storage)
-- Personal IDE settings
-- Temporary/cache files
-
-### Recommended Workflow
-
-```bash
-# Create feature branch
-git checkout -b feature/new-defect-type
-
-# Make changes
-# ... edit files ...
-
-# Stage and commit
-git add filename.py
-git commit -m "Add: Support for new defect type"
-
-# Push branch
-git push origin feature/new-defect-type
-
-# Create pull request on GitHub
-```
-
----
 
 ## 🎓 Training Your Own Model
 
@@ -494,31 +398,6 @@ If accuracy is low:
 - Train more epochs
 - Try data augmentation
 
-## 🤝 Contributing
-
-Contributions welcome! Please:
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit pull request
-
-## 📄 License
-
-MIT License - see LICENSE file for details
-
-## 📧 Support
-
-For issues or questions:
-- Open GitHub issue
-- Email: support@example.com
-- Documentation: See USER_GUIDE.md
-
-## 🙏 Acknowledgments
-
-- EfficientNet: https://github.com/lukemelas/EfficientNet-PyTorch
-- Dataset: PCB defect dataset
-- Libraries: PyTorch, OpenCV, Streamlit
 
 ## 📊 Performance Metrics
 
@@ -530,15 +409,3 @@ On test set:
 - **Short:** 100% precision, 100% recall
 - **Spur:** 100% precision, 100% recall
 - **Spurious Copper:** 100% precision, 100% recall
-
-## 🔄 Version History
-
-- **v1.0.0** (2025-11-20): Initial release
-  - Complete detection pipeline
-  - EfficientNet-B4 classifier
-  - Web interface
-  - Export to JPG, CSV, PDF
-
----
-
-**Made with ❤️ for PCB quality control**
