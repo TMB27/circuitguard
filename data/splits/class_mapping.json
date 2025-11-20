@@ -1,0 +1,8 @@
+{
+  "Missing_hole": 0,
+  "Mouse_bite": 1,
+  "Open_circuit": 2,
+  "Short": 3,
+  "Spur": 4,
+  "Spurious_copper": 5
+}
